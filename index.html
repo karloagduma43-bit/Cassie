@@ -8,27 +8,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 
   <style>
-    /* Countdown Lock Styles */
-    #lock-screen {
-      position: fixed;
-      inset: 0;
-      background: #000;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: #ff4d4d;
-      font-family: 'Montserrat', sans-serif;
-      text-align: center;
-    }
-
-    #timer {
-      font-size: 3rem;
-      font-weight: bold;
-      margin-top: 20px;
-    }
-
     /* Animation Styles */
     .cursive-text {
       font-family: 'Great Vibes', cursive;
@@ -78,7 +57,6 @@
       margin-top: 20px;
     }
 
-    /* Slideshow Styles */
     #slideshow {
       display: none;
       position: fixed;
@@ -87,7 +65,7 @@
       width: 100%;
       height: 100%;
       z-index: 90;
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.85);
       overflow-y: auto;
       scroll-behavior: smooth;
     }
@@ -101,7 +79,6 @@
       box-shadow: 0 0 20px rgba(255,255,255,0.2);
     }
 
-    /* Heart Emojis */
     .heart {
       position: fixed;
       font-size: 20px;
@@ -115,7 +92,6 @@
       to { transform: translateY(-10vh) translateX(20px); opacity: 0; }
     }
 
-    /* Final Zoom Text */
     #final-message {
       display: none;
       position: fixed;
@@ -127,6 +103,230 @@
       font-size: 4rem;
       text-align: center;
       z-index: 110;
+      text-shadow: 0 0 20px rgba(52, 152, 219, 0.8);
+    }
+
+    .zoom-forward {
+      animation: zoomForward 2.5s ease-out forwards;
+    }
+
+    @keyframes zoomForward {
+      0% { transform: translate(-50%, -50%) scale(0.1); opacity: 0; }
+      100% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+    }
+
+    #replay-btn {
+      display: none;
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 120;
+      padding: 10px 25px;
+      background: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .shake {
+      animation: screenShake 0.5s ease-in-out;
+    }
+
+    @keyframes screenShake {
+      0% { transform: translate(1px, 1px); }
+      20% { transform: translate(-3px, 0px); }
+      40% { transform: translate(1px, -1px); }
+      60% { transform: translate(-1px, 2px); }
+      80% { transform: translate(-1px, -2px); }
+      100% { transform: translate(0, 0); }
+    }
+
+    @media (max-width: 600px) {
+      .cursive-text, #final-message { font-size: 2.5rem; }
+    }
+  </style>
+</head>
+
+<body>
+  <audio id="bg-music" src="music.mp3" loop></audio>
+
+  <div class="night"></div>
+
+  <h1 id="intro-text" class="cursive-text">Hello, Lovely</h1>
+  
+  <div id="ready-prompt">
+    <h2 style="color: white; font-family: 'Montserrat';">Are you ready?</h2>
+    <button class="btn-yes" onclick="startExperience()">YES</button>
+  </div>
+
+  <div id="slideshow">
+    <div id="media-stack"></div>
+  </div>
+
+  <h1 id="final-message">I LOVE YOU MY VALENTINE💙</h1>
+  <button id="replay-btn" onclick="location.reload()">Replay ❤️</button>
+
+  <div class="flowers">
+    <div class="flower flower--1">
+      <div class="flower__leafs flower__leafs--1">
+        <div class="flower__leaf flower__leaf--1"></div>
+        <div class="flower__leaf flower__leaf--2"></div>
+        <div class="flower__leaf flower__leaf--3"></div>
+        <div class="flower__leaf flower__leaf--4"></div>
+        <div class="flower__white-circle"></div>
+        <div class="flower__light flower__light--1"></div>
+        <div class="flower__light flower__light--2"></div>
+        <div class="flower__light flower__light--3"></div>
+        <div class="flower__light flower__light--4"></div>
+        <div class="flower__light flower__light--5"></div>
+        <div class="flower__light flower__light--6"></div>
+        <div class="flower__light flower__light--7"></div>
+        <div class="flower__light flower__light--8"></div>
+      </div>
+      <div class="flower__line">
+        <div class="flower__line__leaf flower__line__leaf--1"></div>
+        <div class="flower__line__leaf flower__line__leaf--2"></div>
+        <div class="flower__line__leaf flower__line__leaf--3"></div>
+        <div class="flower__line__leaf flower__line__leaf--4"></div>
+        <div class="flower__line__leaf flower__line__leaf--5"></div>
+        <div class="flower__line__leaf flower__line__leaf--6"></div>
+      </div>
+    </div>
+    <div class="flower flower--2">
+      <div class="flower__leafs flower__leafs--2">
+        <div class="flower__leaf flower__leaf--1"></div>
+        <div class="flower__leaf flower__leaf--2"></div>
+        <div class="flower__leaf flower__leaf--3"></div>
+        <div class="flower__leaf flower__leaf--4"></div>
+        <div class="flower__white-circle"></div>
+        <div class="flower__light flower__light--1"></div>
+        <div class="flower__light flower__light--2"></div>
+        <div class="flower__light flower__light--3"></div>
+        <div class="flower__light flower__light--4"></div>
+        <div class="flower__light flower__light--5"></div>
+        <div class="flower__light flower__light--6"></div>
+        <div class="flower__light flower__light--7"></div>
+        <div class="flower__light flower__light--8"></div>
+      </div>
+      <div class="flower__line">
+        <div class="flower__line__leaf flower__line__leaf--1"></div>
+        <div class="flower__line__leaf flower__line__leaf--2"></div>
+        <div class="flower__line__leaf flower__line__leaf--3"></div>
+        <div class="flower__line__leaf flower__line__leaf--4"></div>
+      </div>
+    </div>
+    <div class="flower flower--3">
+      <div class="flower__leafs flower__leafs--3">
+        <div class="flower__leaf flower__leaf--1"></div>
+        <div class="flower__leaf flower__leaf--2"></div>
+        <div class="flower__leaf flower__leaf--3"></div>
+        <div class="flower__leaf flower__leaf--4"></div>
+        <div class="flower__white-circle"></div>
+        <div class="flower__light flower__light--1"></div>
+        <div class="flower__light flower__light--2"></div>
+        <div class="flower__light flower__light--3"></div>
+        <div class="flower__light flower__light--4"></div>
+        <div class="flower__light flower__light--5"></div>
+        <div class="flower__light flower__light--6"></div>
+        <div class="flower__light flower__light--7"></div>
+        <div class="flower__light flower__light--8"></div>
+      </div>
+      <div class="flower__line">
+        <div class="flower__line__leaf flower__line__leaf--1"></div>
+        <div class="flower__line__leaf flower__line__leaf--2"></div>
+        <div class="flower__line__leaf flower__line__leaf--3"></div>
+        <div class="flower__line__leaf flower__line__leaf--4"></div>
+      </div>
+    </div>
+    </div>
+
+  <script src="./script.js"></script>
+  
+  <script>
+    // Trigger effects immediately on load
+    window.onload = () => {
+      document.body.classList.remove('not-loaded');
+      document.body.classList.add('shake');
+      console.log("Fireworks & Confetti triggered!");
+      
+      // Start Intro sequence after 3s (flower animation buffer)
+      setTimeout(showIntro, 3000);
+    };
+
+    function showIntro() {
+      const music = document.getElementById('bg-music');
+      music.play().catch(() => console.log("User interaction required for audio"));
+      
+      const intro = document.getElementById('intro-text');
+      intro.classList.add('fade-in-out');
+
+      setTimeout(() => {
+        intro.style.display = 'none';
+        document.getElementById('ready-prompt').style.display = 'block';
+      }, 5000);
+    }
+
+    function startExperience() {
+      document.getElementById('ready-prompt').style.display = 'none';
+      const slideshow = document.getElementById('slideshow');
+      const stack = document.getElementById('media-stack');
+      slideshow.style.display = 'block';
+
+      // Load Images 1-20
+      for(let i=1; i<=20; i++) {
+        const img = document.createElement('img');
+        img.src = `img${i}.jpg`;
+        img.className = 'slide-media';
+        stack.appendChild(img);
+      }
+
+      // Load Video
+      const video = document.createElement('video');
+      video.src = 'video.mp4';
+      video.className = 'slide-media';
+      video.controls = true;
+      video.autoplay = true;
+      stack.appendChild(video);
+
+      // Load Images 21-40
+      for(let i=21; i<=40; i++) {
+        const img = document.createElement('img');
+        img.src = `img${i}.jpg`;
+        img.className = 'slide-media';
+        stack.appendChild(img);
+      }
+
+      setInterval(createHeart, 300);
+
+      let scrollInterval = setInterval(() => {
+        slideshow.scrollTop += 2;
+        if (slideshow.scrollTop + slideshow.clientHeight >= slideshow.scrollHeight - 10) {
+          clearInterval(scrollInterval);
+          finishExperience();
+        }
+      }, 30);
+    }
+
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.innerHTML = '❤️';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 4000);
+    }
+
+    function finishExperience() {
+      const finalMsg = document.getElementById('final-message');
+      finalMsg.style.display = 'block';
+      finalMsg.classList.add('zoom-forward');
+      document.getElementById('replay-btn').style.display = 'block';
+    }
+  </script>
+</body>
+</html>      z-index: 110;
       text-shadow: 0 0 20px rgba(52, 152, 219, 0.8);
     }
 
