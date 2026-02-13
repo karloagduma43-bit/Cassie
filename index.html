@@ -1,68 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <title>Flowers</title>
   <link rel="stylesheet" href="./style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    /* Animation Styles */
-    .cursive-text {
-      font-family: 'Great Vibes', cursive;
-      font-size: 4.5rem;
-      color: #8b0000;
-      position: fixed;
-      top: 40%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 100;
-      opacity: 0;
-      pointer-events: none;
-      white-space: nowrap;
-    }
-
-    .fade-in-out {
-      animation: fadeInOut 5s forwards;
-    }
-
-    @keyframes fadeInOut {
-      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
-      20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-      80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.1); }
-    }
-
-    #ready-prompt {
-      display: none;
+    /* Sequence Styles */
+    #interactive-content {
       position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      z-index: 101;
       text-align: center;
-    }
-
-    .btn-yes {
-      background: #ff69b4;
+      z-index: 1000;
       color: white;
-      border: none;
-      padding: 15px 40px;
-      font-size: 1.5rem;
-      border-radius: 50px;
-      cursor: pointer;
       font-family: 'Montserrat', sans-serif;
-      box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
-      margin-top: 20px;
+      width: 100%;
     }
-
-    #slideshow {
+    .typing-text {
+      font-size: 2rem;
+      border-right: 3px solid #ff4d4d;
+      white-space: nowrap;
+      overflow: hidden;
+      margin: 0 auto;
+      width: 0;
+    }
+    @keyframes typing { from { width: 0 } to { width: 100% } }
+    @keyframes blink { from, to { border-color: transparent } 50% { border-color: #ff4d4d } }
+    .btn-hi {
+      margin-top: 20px;
+      padding: 10px 30px;
+      background: #ff4d4d;
+      border: none;
+      color: white;
+      border-radius: 20px;
+      cursor: pointer;
+      display: none;
+      font-size: 1.2rem;
+    }
+    #video-container, #final-image-container {
       display: none;
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
+      inset: 0;
+      background: black;
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+    video, .final-img { max-width: 90%; max-height: 80vh; border-radius: 10px; }
+  </style>
+</head>
+
+<body>
+  <audio id="music1" src="1.mp3" loop></audio>
+  <audio id="music2" src="2.mp3" loop></audio>
+
+  <div class="night"></div>
+
+  <div class="flowers">
+    <div class="flower flower--1">
+      <div class="flower__leafs flower__leafs--1">
+        <div class="flower__leaf flower__leaf--1"></div>
+        <div class="flower__leaf flower__leaf--2"></div>
+        <div class="flower__leaf flower__leaf--3"></div>
+        <div class="flower__leaf flower__leaf--4"></div>
+        <div class="flower__white-circle"></div>
+      </div>
+      <div class="flower__line">
+        <div class="flower__line__leaf flower__line__leaf--1"></div>
+      </div>
+    </div>
+    </div>
+
+  <div id="interactive-content">
+    <div id="type-box" class="typing-text"></div>
+    <button id="hi-btn" class="btn-hi">hi</button>
+  </div>
+
+  <div id="video-container">
+    <video id="val-video" src="video.mp4"></video>
+  </div>
+
+  <div id="final-image-container">
+    <img src="image.jpg" class="final-img">
+  </div>
+
+  <script src="./script.js"></script>
+  <script>
+    window.onload = () => {
+      document.body.classList.remove('not-loaded');
+      // Music starts on first click to bypass browser blocks
+      document.body.addEventListener('click', () => {
+          document.getElementById('music1').play();
+      }, {once: true});
+
+      // Wait for flowers to grow, then start text
+      setTimeout(() => {
+        const text = "hello my dearest, valentine.";
+        const box = document.getElementById('type-box');
+        box.style.animation = `typing 3s steps(${text.length}), blink .5s infinite`;
+        box.innerText = text;
+        box.style.width = "100%";
+        setTimeout(() => {
+          document.getElementById('hi-btn').style.display = 'inline-block';
+        }, 3500);
+      }, 6000);
+    };
+
+    document.getElementById('hi-btn').onclick = () => {
+      document.getElementById('video-container').style.display = 'flex';
+      const v = document.getElementById('val-video');
+      v.play();
+      v.onended = () => {
+        document.getElementById('video-container').style.display = 'none';
+        document.getElementById('music1').pause();
+        document.getElementById('music2').play();
+        document.getElementById('final-image-container').style.display = 'flex';
+      };
+    };
+  </script>
+</body>
+</html>      width: 100%;
       height: 100%;
       z-index: 90;
       background: rgba(0,0,0,0.85);
