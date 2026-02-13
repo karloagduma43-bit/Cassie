@@ -121,6 +121,65 @@
     };
   </script>
 </body>
+</html>        <div class="flower__leaf flower__leaf--2"></div>
+        <div class="flower__leaf flower__leaf--3"></div>
+        <div class="flower__leaf flower__leaf--4"></div>
+        <div class="flower__white-circle"></div>
+      </div>
+      <div class="flower__line">
+        <div class="flower__line__leaf flower__line__leaf--1"></div>
+      </div>
+    </div>
+    </div>
+
+  <div id="interactive-content">
+    <div id="type-box" class="typing-text"></div>
+    <button id="hi-btn" class="btn-hi">hi</button>
+  </div>
+
+  <div id="video-container">
+    <video id="val-video" src="video.mp4"></video>
+  </div>
+
+  <div id="final-image-container">
+    <img src="image.jpg" class="final-img">
+  </div>
+
+  <script src="./script.js"></script>
+  <script>
+    window.onload = () => {
+      document.body.classList.remove('not-loaded');
+      // Music starts on first click to bypass browser blocks
+      document.body.addEventListener('click', () => {
+          document.getElementById('music1').play();
+      }, {once: true});
+
+      // Wait for flowers to grow, then start text
+      setTimeout(() => {
+        const text = "hello my dearest, valentine.";
+        const box = document.getElementById('type-box');
+        box.style.animation = `typing 3s steps(${text.length}), blink .5s infinite`;
+        box.innerText = text;
+        box.style.width = "100%";
+        setTimeout(() => {
+          document.getElementById('hi-btn').style.display = 'inline-block';
+        }, 3500);
+      }, 6000);
+    };
+
+    document.getElementById('hi-btn').onclick = () => {
+      document.getElementById('video-container').style.display = 'flex';
+      const v = document.getElementById('val-video');
+      v.play();
+      v.onended = () => {
+        document.getElementById('video-container').style.display = 'none';
+        document.getElementById('music1').pause();
+        document.getElementById('music2').play();
+        document.getElementById('final-image-container').style.display = 'flex';
+      };
+    };
+  </script>
+</body>
 </html>      width: 100%;
       height: 100%;
       z-index: 90;
