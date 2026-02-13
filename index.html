@@ -1,174 +1,607 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #FAEEE6;
-            overflow: hidden;
-        }
+  <meta charset="UTF-8">
+  <title>Flowers</title>
+  <link rel="stylesheet" href="./style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 
-        #content {
-            background-color: #FFC0CB;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            padding: 20px;
-            text-align: center;
-            z-index: 2;
-        }
+  <style>
+    /* Countdown Lock Styles */
+    #lock-screen {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #ff4d4d;
+      font-family: 'Montserrat', sans-serif;
+      text-align: center;
+    }
 
-        #yesButton, #noButton {
-            font-size: 20px;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            transition: 0.3s;
-            padding: 15px;
-            border: none;
-            cursor: pointer;
-            margin: 10px;
-        }
+    #timer {
+      font-size: 3rem;
+      font-weight: bold;
+      margin-top: 20px;
+    }
 
-        #yesButton {
-            background-color: #4CAF50;
-            color: white;
-        }
+    /* Animation Styles */
+    .cursive-text {
+      font-family: 'Great Vibes', cursive;
+      font-size: 4.5rem;
+      color: #8b0000;
+      position: fixed;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+    }
 
-        #noButton {
-            background-color: #f44336;
-            color: white;
-        }
+    .fade-in-out {
+      animation: fadeInOut 5s forwards;
+    }
 
-        #noButton:disabled {
-            background-color: #ddd;
-            color: #666;
-            box-shadow: none;
-        }
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+      20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.1); }
+    }
 
-        /* HEARTS */
-        .heart {
-            position: fixed;
-            top: -100px;
-            width: 100px;
-            height: 100px;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 29.6"><path fill="%23FF0000" d="M16 29.6c-1-.6-21-12.6-16-20C5.7 5.6 10.3 4 16 11c5.7-7 10.3-5.4 16-2.6 5 7.4-15 19.6-16 20z"/></svg>');
-            animation: fall 4s linear infinite;
-            pointer-events: none;
-        }
+    #ready-prompt {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 101;
+      text-align: center;
+    }
 
-        @keyframes fall {
-            0% { transform: translateY(-100vh); }
-            100% { transform: translateY(100vh); }
-        }
+    .btn-yes {
+      background: #ff69b4;
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      font-size: 1.5rem;
+      border-radius: 50px;
+      cursor: pointer;
+      font-family: 'Montserrat', sans-serif;
+      box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
+      margin-top: 20px;
+    }
 
-        /* LILIES */
-        .lily {
-            position: fixed;
-            bottom: -120px;
-            width: 80px;
-            height: 80px;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path fill="%23FFFFFF" d="M32 6c6 10 18 18 18 30 0 10-8 18-18 18S14 46 14 36c0-12 12-20 18-30z"/><circle cx="32" cy="36" r="4" fill="%23FFD700"/></svg>');
-            background-size: contain;
-            background-repeat: no-repeat;
-            animation: rise 6s ease-in-out forwards;
-            opacity: 0.95;
-            pointer-events: none;
-        }
+    /* Slideshow Styles */
+    #slideshow {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 90;
+      background: rgba(0,0,0,0.8);
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
 
-        @keyframes rise {
-            0% {
-                transform: translateY(0) scale(0.8);
-                opacity: 0;
-            }
-            30% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-120vh) scale(1);
-                opacity: 0;
-            }
-        }
-    </style>
+    .slide-media {
+      display: block;
+      width: 90%;
+      max-width: 500px;
+      margin: 20px auto;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(255,255,255,0.2);
+    }
+
+    /* Heart Emojis */
+    .heart {
+      position: fixed;
+      font-size: 20px;
+      z-index: 80;
+      pointer-events: none;
+      animation: floatUp 4s linear forwards;
+    }
+
+    @keyframes floatUp {
+      from { transform: translateY(100vh) translateX(0); opacity: 1; }
+      to { transform: translateY(-10vh) translateX(20px); opacity: 0; }
+    }
+
+    /* Final Zoom Text */
+    #final-message {
+      display: none;
+      position: fixed;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Montserrat', sans-serif;
+      color: #3498db;
+      font-size: 4rem;
+      text-align: center;
+      z-index: 110;
+      text-shadow: 0 0 20px rgba(52, 152, 219, 0.8);
+    }
+
+    .zoom-forward {
+      animation: zoomForward 2.5s ease-out forwards;
+    }
+
+    @keyframes zoomForward {
+      0% { transform: translate(-50%, -50%) scale(0.1); opacity: 0; }
+      100% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+    }
+
+    #replay-btn {
+      display: none;
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 120;
+      padding: 10px 25px;
+      background: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    /* Screen Shake */
+    .shake {
+      animation: screenShake 0.5s infinite;
+    }
+
+    @keyframes screenShake {
+      0% { transform: translate(1px, 1px) rotate(0deg); }
+      10% { transform: translate(-1px, -2px) rotate(-1deg); }
+      20% { transform: translate(-3px, 0px) rotate(1deg); }
+      30% { transform: translate(3px, 2px) rotate(0deg); }
+      40% { transform: translate(1px, -1px) rotate(1deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .cursive-text, #final-message { font-size: 2.5rem; }
+      #timer { font-size: 2rem; }
+    }
+  </style>
 </head>
 
-<body>
-    <div id="content">
-        <h2 id="question">Would my beautiful stinky baby date me?</h2>
+<body class="not-loaded">
+  <div id="lock-screen">
+    <h2>Wait for the magic...</h2>
+    <div id="timer">Loading...</div>
+  </div>
 
-        <button id="yesButton">YES</button>
-        <button id="noButton">NO</button>
+  <audio id="bg-music" src="music.mp3" loop></audio>
 
-        <p id="message"></p>
+  <div class="night"></div>
+
+  <h1 id="intro-text" class="cursive-text">Hello, Lovely</h1>
+  
+  <div id="ready-prompt">
+    <h2 style="color: white; font-family: 'Montserrat';">Are you ready?</h2>
+    <button class="btn-yes" onclick="startExperience()">YES</button>
+  </div>
+
+  <div id="slideshow">
+    <div id="media-stack"></div>
+  </div>
+
+  <h1 id="final-message">I LOVE YOU MY VALENTINE💙</h1>
+  <button id="replay-btn" onclick="location.reload()">Replay ❤️</button>
+
+  <div class="flowers">
+    <div class="flower flower--1">
+      <div class="flower__leafs flower__leafs--1">
+        <div class="flower__leaf flower__leaf--1"></div>
+        <div class="flower__leaf flower__leaf--2"></div>
+        <div class="flower__leaf flower__leaf--3"></div>
+        <div class="flower__leaf flower__leaf--4"></div>
+        <div class="flower__white-circle"></div>
+        <div class="flower__light flower__light--1"></div>
+        <div class="flower__light flower__light--2"></div>
+        <div class="flower__light flower__light--3"></div>
+        <div class="flower__light flower__light--4"></div>
+        <div class="flower__light flower__light--5"></div>
+        <div class="flower__light flower__light--6"></div>
+        <div class="flower__light flower__light--7"></div>
+        <div class="flower__light flower__light--8"></div>
+      </div>
+      <div class="flower__line">
+        <div class="flower__line__leaf flower__line__leaf--1"></div>
+        <div class="flower__line__leaf flower__line__leaf--2"></div>
+        <div class="flower__line__leaf flower__line__leaf--3"></div>
+        <div class="flower__line__leaf flower__line__leaf--4"></div>
+        <div class="flower__line__leaf flower__line__leaf--5"></div>
+        <div class="flower__line__leaf flower__line__leaf--6"></div>
+      </div>
     </div>
 
-    <script>
-        var noClickCount = 0;
+    <div class="flower flower--2">
+      <div class="flower__leafs flower__leafs--2">
+        <div class="flower__leaf flower__leaf--1"></div>
+        <div class="flower__leaf flower__leaf--2"></div>
+        <div class="flower__leaf flower__leaf--3"></div>
+        <div class="flower__leaf flower__leaf--4"></div>
+        <div class="flower__white-circle"></div>
+        <div class="flower__light flower__light--1"></div>
+        <div class="flower__light flower__light--2"></div>
+        <div class="flower__light flower__light--3"></div>
+        <div class="flower__light flower__light--4"></div>
+        <div class="flower__light flower__light--5"></div>
+        <div class="flower__light flower__light--6"></div>
+        <div class="flower__light flower__light--7"></div>
+        <div class="flower__light flower__light--8"></div>
+      </div>
+      <div class="flower__line">
+        <div class="flower__line__leaf flower__line__leaf--1"></div>
+        <div class="flower__line__leaf flower__line__leaf--2"></div>
+        <div class="flower__line__leaf flower__line__leaf--3"></div>
+        <div class="flower__line__leaf flower__line__leaf--4"></div>
+      </div>
+    </div>
 
-        document.getElementById('noButton').addEventListener('click', function() {
-            noClickCount++;
+    <div class="flower flower--3">
+      <div class="flower__leafs flower__leafs--3">
+        <div class="flower__leaf flower__leaf--1"></div>
+        <div class="flower__leaf flower__leaf--2"></div>
+        <div class="flower__leaf flower__leaf--3"></div>
+        <div class="flower__leaf flower__leaf--4"></div>
+        <div class="flower__white-circle"></div>
+        <div class="flower__light flower__light--1"></div>
+        <div class="flower__light flower__light--2"></div>
+        <div class="flower__light flower__light--3"></div>
+        <div class="flower__light flower__light--4"></div>
+        <div class="flower__light flower__light--5"></div>
+        <div class="flower__light flower__light--6"></div>
+        <div class="flower__light flower__light--7"></div>
+        <div class="flower__light flower__light--8"></div>
+      </div>
+      <div class="flower__line">
+        <div class="flower__line__leaf flower__line__leaf--1"></div>
+        <div class="flower__line__leaf flower__line__leaf--2"></div>
+        <div class="flower__line__leaf flower__line__leaf--3"></div>
+        <div class="flower__line__leaf flower__line__leaf--4"></div>
+      </div>
+    </div>
 
-            if (noClickCount == 1) {
-                document.getElementById('yesButton').style.fontSize = '30px';
-            } 
-            else if (noClickCount == 2) {
-                this.style.fontSize = '10px';
-                document.getElementById('yesButton').style.fontSize = '40px';
-            } 
-            else if (noClickCount == 3) {
-                document.getElementById('yesButton').style.fontSize = '90px';
-                this.style.fontSize = '7px';
-            } 
-            else if (noClickCount >= 4 && noClickCount < 15) {
-                this.style.position = 'absolute';
-                this.style.left = Math.random() * window.innerWidth + 'px';
-                this.style.top = Math.random() * window.innerHeight + 'px';
-                document.getElementById('message').innerText = 'Are you sure? 👀';
-            } 
-            else if (noClickCount == 15) {
-                document.getElementById('message').innerText = 'Oh no! You broke the button :c';
-                this.disabled = true;
-                this.style.color = 'grey';
-            }
-        });
+    <div class="grow-ans" style="--d:1.2s">
+      <div class="flower__g-long">
+        <div class="flower__g-long__top"></div>
+        <div class="flower__g-long__bottom"></div>
+      </div>
+    </div>
 
-        document.getElementById('yesButton').addEventListener('click', function() {
+    <div class="growing-grass">
+      <div class="flower__grass flower__grass--1">
+        <div class="flower__grass--top"></div>
+        <div class="flower__grass--bottom"></div>
+        <div class="flower__grass__leaf flower__grass__leaf--1"></div>
+        <div class="flower__grass__leaf flower__grass__leaf--2"></div>
+        <div class="flower__grass__leaf flower__grass__leaf--3"></div>
+        <div class="flower__grass__leaf flower__grass__leaf--4"></div>
+        <div class="flower__grass__leaf flower__grass__leaf--5"></div>
+        <div class="flower__grass__leaf flower__grass__leaf--6"></div>
+        <div class="flower__grass__leaf flower__grass__leaf--7"></div>
+        <div class="flower__grass__leaf flower__grass__leaf--8"></div>
+        <div class="flower__grass__overlay"></div>
+      </div>
+    </div>
 
-            document.getElementById('question').innerText = 'YEYYYYYYYYY 💖';
+    <div class="growing-grass">
+      <div class="flower__grass flower__grass--2">
+        <div class="flower__grass--top"></div>
+        <div class="flower__grass--bottom"></div>
+        <div class="flower__grass__leaf flower__grass__leaf--1"></div>
+        <div class="flower__grass__leaf flower__grass__leaf--2"></div>
+        <div class="flower__grass__leaf flower__grass__leaf--3"></div>
+        <div class="flower__grass__leaf flower__grass__leaf--4"></div>
+        <div class="flower__grass__leaf flower__grass__leaf--5"></div>
+        <div class="flower__grass__leaf flower__grass__leaf--6"></div>
+        <div class="flower__grass__leaf flower__grass__leaf--7"></div>
+        <div class="flower__grass__leaf flower__grass__leaf--8"></div>
+        <div class="flower__grass__overlay"></div>
+      </div>
+    </div>
 
-            document.getElementById('message').innerText =
-                "I knew it 😌💗 You just made me the happiest person ever. Baby the you for choosing me. I will do everything to make you happy. Mahal na mahal kita Cassie ko.";
+    <div class="grow-ans" style="--d:2.4s">
+      <div class="flower__g-right flower__g-right--1">
+        <div class="leaf"></div>
+      </div>
+    </div>
 
-            document.getElementById('message').style.fontSize = '22px';
-            document.getElementById('message').style.marginTop = '15px';
+    <div class="grow-ans" style="--d:2.8s">
+      <div class="flower__g-right flower__g-right--2">
+        <div class="leaf"></div>
+      </div>
+    </div>
 
-            // HEARTS
-            for (var i = 0; i < 100; i++) {
-                var heart = document.createElement('div');
-                heart.className = 'heart';
-                heart.style.left = Math.random() * window.innerWidth + 'px';
-                heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
-                heart.style.animationDelay = Math.random() * 2 + 's';
-                document.body.appendChild(heart);
-            }
+    <div class="grow-ans" style="--d:2.8s">
+      <div class="flower__g-front">
+        <div class="flower__g-front__leaf-wrapper flower__g-front__leaf-wrapper--1">
+          <div class="flower__g-front__leaf"></div>
+        </div>
+        <div class="flower__g-front__leaf-wrapper flower__g-front__leaf-wrapper--2">
+          <div class="flower__g-front__leaf"></div>
+        </div>
+        <div class="flower__g-front__leaf-wrapper flower__g-front__leaf-wrapper--3">
+          <div class="flower__g-front__leaf"></div>
+        </div>
+        <div class="flower__g-front__leaf-wrapper flower__g-front__leaf-wrapper--4">
+          <div class="flower__g-front__leaf"></div>
+        </div>
+        <div class="flower__g-front__leaf-wrapper flower__g-front__leaf-wrapper--5">
+          <div class="flower__g-front__leaf"></div>
+        </div>
+        <div class="flower__g-front__leaf-wrapper flower__g-front__leaf-wrapper--6">
+          <div class="flower__g-front__leaf"></div>
+        </div>
+        <div class="flower__g-front__leaf-wrapper flower__g-front__leaf-wrapper--7">
+          <div class="flower__g-front__leaf"></div>
+        </div>
+        <div class="flower__g-front__leaf-wrapper flower__g-front__leaf-wrapper--8">
+          <div class="flower__g-front__leaf"></div>
+        </div>
+        <div class="flower__g-front__line"></div>
+      </div>
+    </div>
 
-            // 🌸 LILIES (final touch)
-            for (var j = 0; j < 25; j++) {
-                var lily = document.createElement('div');
-                lily.className = 'lily';
-                lily.style.left = Math.random() * window.innerWidth + 'px';
-                lily.style.animationDelay = (Math.random() * 2) + 's';
-                document.body.appendChild(lily);
-            }
+    <div class="grow-ans" style="--d:3.2s">
+      <div class="flower__g-fr">
+        <div class="leaf"></div>
+        <div class="flower__g-fr__leaf flower__g-fr__leaf--1"></div>
+        <div class="flower__g-fr__leaf flower__g-fr__leaf--2"></div>
+        <div class="flower__g-fr__leaf flower__g-fr__leaf--3"></div>
+        <div class="flower__g-fr__leaf flower__g-fr__leaf--4"></div>
+        <div class="flower__g-fr__leaf flower__g-fr__leaf--5"></div>
+        <div class="flower__g-fr__leaf flower__g-fr__leaf--6"></div>
+        <div class="flower__g-fr__leaf flower__g-fr__leaf--7"></div>
+        <div class="flower__g-fr__leaf flower__g-fr__leaf--8"></div>
+      </div>
+    </div>
 
-            document.getElementById('yesButton').style.display = 'none';
-            document.getElementById('noButton').style.display = 'none';
-        });
-    </script>
+    <div class="long-g long-g--0">
+      <div class="grow-ans" style="--d:3s">
+        <div class="leaf leaf--0"></div>
+      </div>
+      <div class="grow-ans" style="--d:2.2s">
+        <div class="leaf leaf--1"></div>
+      </div>
+      <div class="grow-ans" style="--d:3.4s">
+        <div class="leaf leaf--2"></div>
+      </div>
+      <div class="grow-ans" style="--d:3.6s">
+        <div class="leaf leaf--3"></div>
+      </div>
+    </div>
+
+    <div class="long-g long-g--1">
+      <div class="grow-ans" style="--d:3.6s">
+        <div class="leaf leaf--0"></div>
+      </div>
+      <div class="grow-ans" style="--d:3.8s">
+        <div class="leaf leaf--1"></div>
+      </div>
+      <div class="grow-ans" style="--d:4s">
+        <div class="leaf leaf--2"></div>
+      </div>
+      <div class="grow-ans" style="--d:4.2s">
+        <div class="leaf leaf--3"></div>
+      </div>
+    </div>
+
+    <div class="long-g long-g--2">
+      <div class="grow-ans" style="--d:4s">
+        <div class="leaf leaf--0"></div>
+      </div>
+      <div class="grow-ans" style="--d:4.2s">
+        <div class="leaf leaf--1"></div>
+      </div>
+      <div class="grow-ans" style="--d:4.4s">
+        <div class="leaf leaf--2"></div>
+      </div>
+      <div class="grow-ans" style="--d:4.6s">
+        <div class="leaf leaf--3"></div>
+      </div>
+    </div>
+
+    <div class="long-g long-g--3">
+      <div class="grow-ans" style="--d:4s">
+        <div class="leaf leaf--0"></div>
+      </div>
+      <div class="grow-ans" style="--d:4.2s">
+        <div class="leaf leaf--1"></div>
+      </div>
+      <div class="grow-ans" style="--d:3s">
+        <div class="leaf leaf--2"></div>
+      </div>
+      <div class="grow-ans" style="--d:3.6s">
+        <div class="leaf leaf--3"></div>
+      </div>
+    </div>
+
+    <div class="long-g long-g--4">
+      <div class="grow-ans" style="--d:4s">
+        <div class="leaf leaf--0"></div>
+      </div>
+      <div class="grow-ans" style="--d:4.2s">
+        <div class="leaf leaf--1"></div>
+      </div>
+      <div class="grow-ans" style="--d:3s">
+        <div class="leaf leaf--2"></div>
+      </div>
+      <div class="grow-ans" style="--d:3.6s">
+        <div class="leaf leaf--3"></div>
+      </div>
+    </div>
+
+    <div class="long-g long-g--5">
+      <div class="grow-ans" style="--d:4s">
+        <div class="leaf leaf--0"></div>
+      </div>
+      <div class="grow-ans" style="--d:4.2s">
+        <div class="leaf leaf--1"></div>
+      </div>
+      <div class="grow-ans" style="--d:3s">
+        <div class="leaf leaf--2"></div>
+      </div>
+      <div class="grow-ans" style="--d:3.6s">
+        <div class="leaf leaf--3"></div>
+      </div>
+    </div>
+
+    <div class="long-g long-g--6">
+      <div class="grow-ans" style="--d:4.2s">
+        <div class="leaf leaf--0"></div>
+      </div>
+      <div class="grow-ans" style="--d:4.4s">
+        <div class="leaf leaf--1"></div>
+      </div>
+      <div class="grow-ans" style="--d:4.6s">
+        <div class="leaf leaf--2"></div>
+      </div>
+      <div class="grow-ans" style="--d:4.8s">
+        <div class="leaf leaf--3"></div>
+      </div>
+    </div>
+
+    <div class="long-g long-g--7">
+      <div class="grow-ans" style="--d:3s">
+        <div class="leaf leaf--0"></div>
+      </div>
+      <div class="grow-ans" style="--d:3.2s">
+        <div class="leaf leaf--1"></div>
+      </div>
+      <div class="grow-ans" style="--d:3.5s">
+        <div class="leaf leaf--2"></div>
+      </div>
+      <div class="grow-ans" style="--d:3.6s">
+        <div class="leaf leaf--3"></div>
+      </div>
+    </div>
+    </div>
+
+  <script src="./script.js"></script>
+  
+  <script>
+    /* LOGIC CONTROLLER */
+    const targetDate = new Date("February 14, 2026 00:00:00").getTime();
+    const lockScreen = document.getElementById('lock-screen');
+    const timerDisplay = document.getElementById('timer');
+
+    // 1. Countdown Lock
+    const countdown = setInterval(() => {
+      const now = new Date().getTime();
+      const diff = targetDate - now;
+
+      if (diff <= 0) {
+        clearInterval(countdown);
+        unlock();
+      } else {
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
+        timerDisplay.innerText = `${d}d ${h}h ${m}m ${s}s`;
+      }
+    }, 1000);
+
+    function unlock() {
+      lockScreen.style.display = 'none';
+      document.body.classList.remove('not-loaded');
+      
+      // Trigger Screen Shake & Effects
+      document.body.classList.add('shake');
+      setTimeout(() => document.body.classList.remove('shake'), 2000);
+      
+      // Intro sequence after 3s (flower animation buffer)
+      setTimeout(showIntro, 3000);
+    }
+
+    // 2. Intro Sequences
+    function showIntro() {
+      document.getElementById('bg-music').play();
+      const intro = document.getElementById('intro-text');
+      intro.classList.add('fade-in-out');
+
+      // After 5s text disappears, show prompt
+      setTimeout(() => {
+        intro.style.display = 'none';
+        document.getElementById('ready-prompt').style.display = 'block';
+      }, 5000);
+    }
+
+    // 3. Slideshow Experience
+    function startExperience() {
+      document.getElementById('ready-prompt').style.display = 'none';
+      const slideshow = document.getElementById('slideshow');
+      const stack = document.getElementById('media-stack');
+      slideshow.style.display = 'block';
+
+      // Load Images 1-20
+      for(let i=1; i<=20; i++) {
+        const img = document.createElement('img');
+        img.src = `img${i}.jpg`;
+        img.className = 'slide-media';
+        stack.appendChild(img);
+      }
+
+      // Load Video
+      const video = document.createElement('video');
+      video.src = 'video.mp4';
+      video.className = 'slide-media';
+      video.autoplay = true;
+      video.muted = false;
+      stack.appendChild(video);
+
+      // Load Images 21-40
+      for(let i=21; i<=40; i++) {
+        const img = document.createElement('img');
+        img.src = `img${i}.jpg`;
+        img.className = 'slide-media';
+        stack.appendChild(img);
+      }
+
+      // Continuous Floating Hearts
+      setInterval(createHeart, 300);
+
+      // Auto scroll logic
+      let scrollInterval = setInterval(() => {
+        slideshow.scrollTop += 2;
+        if (slideshow.scrollTop + slideshow.clientHeight >= slideshow.scrollHeight - 10) {
+          clearInterval(scrollInterval);
+          finishExperience();
+        }
+      }, 30);
+    }
+
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.innerHTML = '❤️';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 4000);
+    }
+
+    function finishExperience() {
+      const finalMsg = document.getElementById('final-message');
+      finalMsg.style.display = 'block';
+      finalMsg.classList.add('zoom-forward');
+      document.getElementById('replay-btn').style.display = 'block';
+    }
+  </script>
 </body>
+
 </html>
 
 
